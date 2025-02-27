@@ -23,19 +23,16 @@ export interface DisplayRoutesConfig {
    * Filter routes by domain - can be a single domain or array of domains
    * Example: "users" will match "/api/users/*"
    */
-  filterDomain?: string | string[];
+  domainFilter?: string | string[];
 
   /** Only show routes that don't require authentication */
   showUnprotectedOnly?: boolean;
-
-  /** Base path prefix for API routes (default is empty, includes all routes) */
-  pathPrefix?: string;
 
   /**
    * Custom function to determine if a route is protected
    * Replaces the old protectionMiddlewareName parameter with more flexibility
    */
-  isProtected?: (route: any) => boolean;
+  isProtected?: (route: RouteInfo) => boolean;
 
   /**
    * Custom filter function to include only routes that match the criteria
@@ -50,8 +47,9 @@ export interface DisplayRoutesConfig {
   excludeFilter?: (route: RouteInfo) => boolean;
 
   /**
-   * Name of middleware function that indicates a protected route
+   * Name of middleware function(s) that indicate a protected route
    * Example: "ensureAuthenticated" will mark routes with this middleware as protected
+   * Can be a single middleware name or an array of names
    */
-  protectionMiddlewareName?: string;
+  protectionMiddlewareName?: string | string[];
 }

@@ -22,8 +22,7 @@ export function extractRoutes(
 ): RouteInfo[] {
   // Extract configuration options with defaults
   const {
-    filterDomain,
-    pathPrefix,
+    domainFilter,
     showUnprotectedOnly = false,
     isProtected: isProtectedFn,
     includeFilter,
@@ -45,8 +44,7 @@ export function extractRoutes(
 
   // Apply filters to the extracted routes
   return filterRoutes(extractedRoutes, {
-    filterDomain,
-    pathPrefix,
+    domainFilter,
     showUnprotectedOnly,
     includeFilter,
     excludeFilter,
@@ -59,8 +57,8 @@ export function extractRoutes(
 function extractRoutesFromRouter(
   router: any,
   baseRoute: string,
-  isProtectedFn?: (route: any) => boolean,
-  protectionMiddlewareName?: string
+  isProtectedFn?: (route: RouteInfo) => boolean,
+  protectionMiddlewareName?: string | string[]
 ): RouteInfo[] {
   // Skip if router has no stack (no routes defined)
   const stack = router.stack || [];
@@ -88,25 +86,19 @@ function extractRoutesFromRouter(
 function filterRoutes(
   routes: RouteInfo[],
   filters: {
-    filterDomain?: string | string[];
-    pathPrefix?: string;
+    domainFilter?: string | string[];
     showUnprotectedOnly?: boolean;
     includeFilter?: (route: RouteInfo) => boolean;
     excludeFilter?: (route: RouteInfo) => boolean;
   }
 ): RouteInfo[] {
-  const { filterDomain, pathPrefix, showUnprotectedOnly, includeFilter, excludeFilter } = filters;
+  const { domainFilter, showUnprotectedOnly, includeFilter, excludeFilter } = filters;
 
   let filteredRoutes = [...routes];
 
   // Apply domain filter if specified
-  if (filterDomain) {
-    filteredRoutes = applyDomainFilter(filteredRoutes, filterDomain);
-  }
-
-  // Filter by path prefix
-  if (pathPrefix) {
-    filteredRoutes = filteredRoutes.filter((route) => route.path.startsWith(pathPrefix));
+  if (domainFilter) {
+    filteredRoutes = applyDomainFilter(filteredRoutes, domainFilter);
   }
 
   // Apply protected routes filter
@@ -130,8 +122,8 @@ function filterRoutes(
 /**
  * Applies domain filtering to routes
  */
-function applyDomainFilter(routes: RouteInfo[], filterDomain: string | string[]): RouteInfo[] {
-  const domains = Array.isArray(filterDomain) ? filterDomain : [filterDomain];
+function applyDomainFilter(routes: RouteInfo[], domainFilter: string | string[]): RouteInfo[] {
+  const domains = Array.isArray(domainFilter) ? domainFilter : [domainFilter];
 
   return routes.filter((route) => {
     return domains.some((domain) => {
@@ -155,8 +147,8 @@ function applyDomainFilter(routes: RouteInfo[], filterDomain: string | string[])
 function extractRoutesFromNestedRouter(
   layer: any,
   baseRoute: string,
-  isProtectedFn?: (route: any) => boolean,
-  protectionMiddlewareName?: string
+  isProtectedFn?: (route: RouteInfo) => boolean,
+  protectionMiddlewareName?: string | string[]
 ): RouteInfo[] {
   let subRoutePath = "/";
   if (layer.regexp) {
@@ -175,8 +167,8 @@ function extractRoutesFromNestedRouter(
 function extractRoutesFromSpecialMiddleware(
   layer: any,
   baseRoute: string,
-  isProtectedFn?: (route: any) => boolean,
-  protectionMiddlewareName?: string
+  isProtectedFn?: (route: RouteInfo) => boolean,
+  protectionMiddlewareName?: string | string[]
 ): RouteInfo[] {
   const subRoutePath = extractBaseRoute(layer.regexp);
 
@@ -194,8 +186,8 @@ function extractRoutesFromSpecialMiddleware(
 function extractRoutesFromRouteLayer(
   layer: any,
   basePath: string,
-  isProtectedFn?: (route: any) => boolean,
-  protectionMiddlewareName?: string
+  isProtectedFn?: (route: RouteInfo) => boolean,
+  protectionMiddlewareName?: string | string[]
 ): RouteInfo[] {
   const route = layer.route;
   if (!route) return [];

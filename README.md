@@ -13,7 +13,7 @@ A lightweight utility to extract and display Express.js application routes in cl
 - 🧭 **Clear route overview**: Displays all your API routes in a structured format
 - 🔍 **Domain filtering**: Filter routes by specific domains for focused views
 - 🔒 **Authentication indicators**: Clearly shows which routes are protected
-- 📐 **Flexible filtering**: Filter routes by path prefix, protection status, and custom criteria
+- 📐 **Flexible filtering**: Filter routes by protection status and custom criteria
 - 📊 **Easy integration**: Works with any Express.js application
 
 ## Installation
@@ -65,15 +65,15 @@ displayRoutes(app, config);
 
 You can customize the route display with the following options:
 
-| Option                     | Type                            | Default     | Description                                                        |
-| -------------------------- | ------------------------------- | ----------- | ------------------------------------------------------------------ |
-| `filterDomain`             | `string \| string[]`            | `undefined` | Filter routes by domain (e.g., "users" will match "/api/users/\*") |
-| `showUnprotectedOnly`      | `boolean`                       | `false`     | Only show routes that don't require authentication                 |
-| `pathPrefix`               | `string`                        | `undefined` | Only show routes that start with this path prefix                  |
-| `isProtected`              | `(route: any) => boolean`       | `undefined` | Custom function to determine if a route is protected               |
-| `includeFilter`            | `(route: RouteInfo) => boolean` | `undefined` | Custom function to include only routes that match criteria         |
-| `excludeFilter`            | `(route: RouteInfo) => boolean` | `undefined` | Custom function to exclude routes that match criteria              |
-| `protectionMiddlewareName` | `string`                        | `undefined` | Name of middleware function that indicates a protected route       |
+| Option                     | Type                            | Default     | Description                                                           |
+| -------------------------- | ------------------------------- | ----------- | --------------------------------------------------------------------- |
+| `domainFilter`             | `string \| string[]`            | `undefined` | Filter routes by domain (e.g., "users" will match "/api/users/\*")    |
+| `showUnprotectedOnly`      | `boolean`                       | `false`     | Only show routes that don't require authentication                    |
+| `pathPrefix`               | `string`                        | `undefined` | Only show routes that start with this path prefix                     |
+| `isProtected`              | `(route: RouteInfo) => boolean` | `undefined` | Custom function to determine if a route is protected                  |
+| `includeFilter`            | `(route: RouteInfo) => boolean` | `undefined` | Custom function to include only routes that match criteria            |
+| `excludeFilter`            | `(route: RouteInfo) => boolean` | `undefined` | Custom function to exclude routes that match criteria                 |
+| `protectionMiddlewareName` | `string \| string[]`            | `undefined` | Name or names of middleware functions that indicate a protected route |
 
 ## Authentication and Protected Routes
 
@@ -100,13 +100,17 @@ displayRoutes(app, {
 displayRoutes(app, {
   isProtected: (route) => {
     // Consider routes with 'admin' in the path as protected
-    return (
-      route.path.includes("admin") ||
-      route.middlewares.some(
-        (middleware) => middleware.name === "requiresAuthentication"
-      )
-    );
+    return route.path.includes("admin") || route.middlewares.some((middleware) => middleware.name === "requiresAuthentication");
   },
+});
+```
+
+### Example with multiple protection middleware names
+
+```javascript
+// Specify multiple middleware names that indicate protected routes
+displayRoutes(app, {
+  protectionMiddlewareName: ["requiresAuthentication", "requiresAdmin", "checkJwt"],
 });
 ```
 
@@ -129,10 +133,7 @@ displayRoutes(app, {
 displayRoutes(app, {
   isProtected: (route) => {
     // Consider routes with 'admin' in the path as protected
-    return (
-      route.path.includes("/admin") ||
-      route.middlewares.some((middleware) => middleware.name === "requireAuth")
-    );
+    return route.path.includes("/admin") || route.middlewares.some((middleware) => middleware.name === "requireAuth");
   },
 });
 ```

@@ -183,7 +183,7 @@ describe("extractRoutes", () => {
 
       // Get only user routes
       const userRoutes = extractRoutes(app, {
-        filterDomain: "users",
+        domainFilter: "users",
       });
 
       // Verify filtering works
@@ -194,7 +194,7 @@ describe("extractRoutes", () => {
 
       // Get only post routes
       const postRoutes = extractRoutes(app, {
-        filterDomain: "posts",
+        domainFilter: "posts",
       });
 
       expect(postRoutes.length).toBe(2);
@@ -203,7 +203,7 @@ describe("extractRoutes", () => {
       });
     });
 
-    it("should handle multiple domains in filterDomain", () => {
+    it("should handle multiple domains in domainFilter", () => {
       const app = express();
       const apiRouter = Router();
       const usersRouter = Router();
@@ -220,7 +220,7 @@ describe("extractRoutes", () => {
 
       // Filter by multiple domains
       const routes = extractRoutes(app, {
-        filterDomain: ["users", "posts"],
+        domainFilter: ["users", "posts"],
       });
 
       // Should include both user and post routes
@@ -237,26 +237,7 @@ describe("extractRoutes", () => {
       );
     });
 
-    it("should filter routes by pathPrefix", () => {
-      const app = express();
-      const apiRouter = Router();
-
-      // Add routes to different paths
-      apiRouter.get("/v1/data", (req, res) => res.send("v1 data"));
-      apiRouter.get("/v2/data", (req, res) => res.send("v2 data"));
-
-      app.use("/api", apiRouter);
-
-      // Filter by path prefix to get only v1 routes
-      const routes = extractRoutes(app, {
-        pathPrefix: "/api/v1",
-      });
-
-      expect(routes.length).toBe(1);
-      expect(routes[0].path).toBe("/api/v1/data");
-    });
-
-    it("should filter by showUnprotectedOnly", () => {
+    it("should filter routes by showUnprotectedOnly", () => {
       const app = express();
       const middleware = function ensureAuthenticated() {};
 
@@ -312,33 +293,6 @@ describe("extractRoutes", () => {
       expect(routes[0].path).toBe("/api/users");
     });
 
-    it("should apply pathPrefix with other filters", () => {
-      const app = express();
-      const v1Router = Router();
-      const v2Router = Router();
-
-      // Add routes to version routers
-      v1Router.get("/users", (req, res) => res.send("v1 users"));
-      v1Router.get("/posts", (req, res) => res.send("v1 posts"));
-
-      v2Router.get("/users", (req, res) => res.send("v2 users"));
-      v2Router.get("/posts", (req, res) => res.send("v2 posts"));
-
-      // Mount version routers
-      app.use("/api/v1", v1Router);
-      app.use("/api/v2", v2Router);
-
-      // Filter with pathPrefix and domain
-      const routes = extractRoutes(app, {
-        pathPrefix: "/api/v1",
-        filterDomain: "users",
-      });
-
-      // Should only include v1 user routes
-      expect(routes.length).toBe(1);
-      expect(routes[0].path).toBe("/api/v1/users");
-    });
-
     it("should handle combining multiple filters", () => {
       const app = express();
       const middleware = function ensureAuthenticated() {};
@@ -348,7 +302,7 @@ describe("extractRoutes", () => {
       app.get("/api/users/profile", middleware, (req, res) => res.send("Private"));
 
       const routes = extractRoutes(app, {
-        filterDomain: "users",
+        domainFilter: "users",
         showUnprotectedOnly: true,
         protectionMiddlewareName: "ensureAuthenticated",
       });
@@ -357,30 +311,6 @@ describe("extractRoutes", () => {
       expect(routes[0].path).toBe("/api/users");
       expect(routes[0].method).toBe("GET");
       expect(routes[0].protected).toBe(false);
-    });
-
-    it("should combine filters correctly with includeFilter and excludeFilter", () => {
-      const app = express();
-      const router = Router();
-
-      // Add various routes
-      router.get("/users", (req, res) => res.send("Get users"));
-      router.post("/users", (req, res) => res.send("Create user"));
-      router.get("/posts", (req, res) => res.send("Get posts"));
-      router.post("/posts", (req, res) => res.send("Create post"));
-
-      app.use("/api", router);
-
-      // Combined filter: Only GET methods on users domain
-      const routes = extractRoutes(app, {
-        filterDomain: "users",
-        includeFilter: (route) => route.method === "GET",
-        excludeFilter: (route) => route.path.includes("admin"),
-      });
-
-      expect(routes.length).toBe(1);
-      expect(routes[0].path).toBe("/api/users");
-      expect(routes[0].method).toBe("GET");
     });
 
     it("should apply multiple filters in the correct order", () => {
@@ -404,8 +334,7 @@ describe("extractRoutes", () => {
 
       // Get routes with multiple filters applied
       const routes = extractRoutes(app, {
-        filterDomain: "admin",
-        pathPrefix: "/api",
+        domainFilter: "admin",
         showUnprotectedOnly: true, // This should filter out the protected routes
         includeFilter: (route) => route.path.includes("settings"),
         protectionMiddlewareName: "ensureAuth",
@@ -417,8 +346,7 @@ describe("extractRoutes", () => {
 
       // Test with a different combination
       const publicRoutes = extractRoutes(app, {
-        pathPrefix: "/api/public",
-        excludeFilter: (route) => route.path.includes("users"),
+        excludeFilter: (route) => !route.path.includes("/api/public/data"),
         protectionMiddlewareName: "ensureAuth",
       });
 
@@ -954,7 +882,7 @@ describe("extractRoutes", () => {
 
       // Test filtering by domain
       const userRoutes = extractRoutes(app, {
-        filterDomain: "users",
+        domainFilter: "users",
         protectionMiddlewareName: "ensureAuthenticated",
       });
       expect(userRoutes.length).toBe(2);
@@ -969,14 +897,50 @@ describe("extractRoutes", () => {
 
       // Test combined filters
       const v2PublicRoutes = extractRoutes(app, {
-        pathPrefix: "/api/v2",
         showUnprotectedOnly: true,
+        domainFilter: "posts",
         protectionMiddlewareName: "ensureAuthenticated",
       });
 
       // Should only find the posts routes (3) as the users routes are protected
       expect(v2PublicRoutes.length).toBe(3);
       expect(v2PublicRoutes.every((r) => r.path.includes("/posts"))).toBe(true);
+    });
+  });
+
+  describe("Additional Tests", () => {
+    it("should handle an array of protection middleware names", () => {
+      const app = express();
+
+      // Create different middleware functions
+      function authMiddleware(req: any, res: any, next: any) {
+        next();
+      }
+      function adminMiddleware(req: any, res: any, next: any) {
+        next();
+      }
+
+      // Add routes with different middleware combinations
+      app.get("/public", (req, res) => res.send("Public"));
+      app.get("/auth-only", authMiddleware, (req, res) => res.send("Auth"));
+      app.get("/admin-only", adminMiddleware, (req, res) => res.send("Admin"));
+      app.get("/both", authMiddleware, adminMiddleware, (req, res) => res.send("Both"));
+
+      // Test with an array of middleware names
+      const routes = extractRoutes(app, {
+        protectionMiddlewareName: ["authMiddleware", "adminMiddleware"],
+      });
+
+      // All routes except "/public" should be marked as protected
+      const publicRoute = routes.find((r) => r.path === "/public");
+      const authRoute = routes.find((r) => r.path === "/auth-only");
+      const adminRoute = routes.find((r) => r.path === "/admin-only");
+      const bothRoute = routes.find((r) => r.path === "/both");
+
+      expect(publicRoute?.protected).toBe(false);
+      expect(authRoute?.protected).toBe(true);
+      expect(adminRoute?.protected).toBe(true);
+      expect(bothRoute?.protected).toBe(true);
     });
   });
 });

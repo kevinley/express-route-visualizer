@@ -52,7 +52,7 @@ describe("index", () => {
       app.use("/api", apiRouter);
 
       // Display only routes in the users domain
-      displayRoutes(app, { filterDomain: "users" });
+      displayRoutes(app, { domainFilter: "users" });
 
       // Get console output
       const consoleOutput = (console.log as jest.Mock).mock.calls.map((call) => call[0]?.toString() || "").join("\n");
@@ -111,7 +111,7 @@ describe("index", () => {
       expect(console.warn).toHaveBeenCalledWith(expect.stringContaining("No router found in Express app"));
     });
 
-    it("should correctly filter routes by path prefix", () => {
+    it("should filter routes with custom includeFilter", () => {
       // Create a real Express app
       const app = express();
       const apiRouter = Router();
@@ -124,8 +124,10 @@ describe("index", () => {
       app.get("/health", (req: Request, res: Response) => res.send("Health check"));
       app.get("/status", (req: Request, res: Response) => res.send("Status check"));
 
-      // Only show API routes
-      displayRoutes(app, { pathPrefix: "/api" });
+      // Only show API routes using includeFilter instead of pathPrefix
+      displayRoutes(app, {
+        includeFilter: (route) => route.path.startsWith("/api"),
+      });
 
       // Check output
       const consoleOutput = (console.log as jest.Mock).mock.calls.map((call) => call[0]?.toString() || "").join("\n");

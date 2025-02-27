@@ -1,3 +1,5 @@
+import { RouteInfo } from "./types";
+
 /**
  * Checks if a layer is a route definition
  */
@@ -33,24 +35,31 @@ export function determineRouteProtection(
   path: string,
   method: string,
   middlewares: any[],
-  isProtectedFn?: (route: any) => boolean,
-  protectionMiddlewareName?: string
+  isProtectedFn?: (route: RouteInfo) => boolean,
+  protectionMiddlewareName?: string | string[]
 ): boolean {
   // If custom isProtected function is provided, use it
   if (isProtectedFn) {
-    return isProtectedFn({
+    const routeInfo: RouteInfo = {
       path,
       method: method.toUpperCase(),
       middlewares,
+      protected: false, // Default, will be determined by the function
+    };
+    return isProtectedFn(routeInfo);
+  }
+
+  // If protectionMiddlewareName is provided, check for it in middleware stack
+  if (protectionMiddlewareName) {
+    const protectionMiddlewareNames = Array.isArray(protectionMiddlewareName) ? protectionMiddlewareName : [protectionMiddlewareName];
+
+    return middlewares.some((middleware) => {
+      const middlewareName = middleware.name || (typeof middleware === "function" ? middleware.name : "");
+      return protectionMiddlewareNames.some((name) => middlewareName === name);
     });
   }
 
-  // If protectionMiddlewareName is provided, check for it directly
-  if (protectionMiddlewareName) {
-    return middlewares.some((middleware) => middleware?.name === protectionMiddlewareName);
-  }
-
-  // By default, consider routes as unprotected
+  // Default to unprotected if no detection method provided
   return false;
 }
 

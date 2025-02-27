@@ -115,14 +115,20 @@ describe("Middleware Extraction Functions", () => {
 
   describe("determineRouteProtection", () => {
     it("should use custom isProtected function when provided", () => {
-      const mockFn = jest.fn().mockReturnValue(true);
+      const mockFn = jest.fn((routeInfo) => {
+        console.log("Mock function called with:", routeInfo);
+        return true;
+      });
+      console.log("About to call determineRouteProtection with method 'get'");
       const result = determineRouteProtection("/api/users", "get", [], mockFn);
+      console.log("Result:", result);
 
       expect(result).toBe(true);
       expect(mockFn).toHaveBeenCalledWith({
         path: "/api/users",
         method: "GET",
         middlewares: [],
+        protected: false,
       });
     });
 
