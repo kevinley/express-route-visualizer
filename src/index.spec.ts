@@ -20,15 +20,9 @@ describe("index", () => {
       const apiRouter = Router();
 
       // Set up some routes
-      apiRouter.get("/users", (req: Request, res: Response) =>
-        res.send("Get users")
-      );
-      apiRouter.post("/users", (req: Request, res: Response) =>
-        res.send("Create user")
-      );
-      apiRouter.get("/products", (req: Request, res: Response) =>
-        res.send("Get products")
-      );
+      apiRouter.get("/users", (req: Request, res: Response) => res.send("Get users"));
+      apiRouter.post("/users", (req: Request, res: Response) => res.send("Create user"));
+      apiRouter.get("/products", (req: Request, res: Response) => res.send("Get products"));
 
       app.use("/api", apiRouter);
 
@@ -36,9 +30,7 @@ describe("index", () => {
       displayRoutes(app);
 
       // Get all console.log calls
-      const consoleOutput = (console.log as jest.Mock).mock.calls
-        .map((call) => call[0]?.toString() || "")
-        .join("\n");
+      const consoleOutput = (console.log as jest.Mock).mock.calls.map((call) => call[0]?.toString() || "").join("\n");
 
       // Verify the output contains expected information
       expect(consoleOutput).toContain("Users");
@@ -53,15 +45,9 @@ describe("index", () => {
       const apiRouter = Router();
 
       // Set up routes in different domains
-      apiRouter.get("/users", (req: Request, res: Response) =>
-        res.send("Get users")
-      );
-      apiRouter.get("/products", (req: Request, res: Response) =>
-        res.send("Get products")
-      );
-      apiRouter.get("/orders", (req: Request, res: Response) =>
-        res.send("Get orders")
-      );
+      apiRouter.get("/users", (req: Request, res: Response) => res.send("Get users"));
+      apiRouter.get("/products", (req: Request, res: Response) => res.send("Get products"));
+      apiRouter.get("/orders", (req: Request, res: Response) => res.send("Get orders"));
 
       app.use("/api", apiRouter);
 
@@ -69,9 +55,7 @@ describe("index", () => {
       displayRoutes(app, { filterDomain: "users" });
 
       // Get console output
-      const consoleOutput = (console.log as jest.Mock).mock.calls
-        .map((call) => call[0]?.toString() || "")
-        .join("\n");
+      const consoleOutput = (console.log as jest.Mock).mock.calls.map((call) => call[0]?.toString() || "").join("\n");
 
       // Should contain Users but not Products or Orders
       expect(consoleOutput).toContain("Users");
@@ -85,23 +69,13 @@ describe("index", () => {
       const apiRouter = Router();
 
       // Define auth middleware
-      function ensureAuthenticated(
-        req: Request,
-        res: Response,
-        next: () => void
-      ) {
+      function ensureAuthenticated(req: Request, res: Response, next: () => void) {
         next();
       }
 
       // Set up public and protected routes
-      apiRouter.get("/public", (req: Request, res: Response) =>
-        res.send("Public route")
-      );
-      apiRouter.get(
-        "/secure",
-        ensureAuthenticated,
-        (req: Request, res: Response) => res.send("Secure route")
-      );
+      apiRouter.get("/public", (req: Request, res: Response) => res.send("Public route"));
+      apiRouter.get("/secure", ensureAuthenticated, (req: Request, res: Response) => res.send("Secure route"));
 
       app.use("/api", apiRouter);
 
@@ -111,9 +85,7 @@ describe("index", () => {
       });
 
       // Check output
-      const consoleOutput = (console.log as jest.Mock).mock.calls
-        .map((call) => call[0]?.toString() || "")
-        .join("\n");
+      const consoleOutput = (console.log as jest.Mock).mock.calls.map((call) => call[0]?.toString() || "").join("\n");
 
       // Should show both lock and globe icons for protected/unprotected routes
       expect(consoleOutput).toContain("🔒"); // Lock icon for protected routes
@@ -128,9 +100,7 @@ describe("index", () => {
       expect(() => displayRoutes(app)).not.toThrow();
 
       // Should show "No routes found" message
-      expect(console.log).toHaveBeenCalledWith(
-        expect.stringContaining("No routes found matching your criteria")
-      );
+      expect(console.log).toHaveBeenCalledWith(expect.stringContaining("No routes found matching your criteria"));
     });
 
     it("should handle invalid app and show warning", () => {
@@ -138,9 +108,7 @@ describe("index", () => {
       displayRoutes(undefined as any);
 
       // Should warn about no router found
-      expect(console.warn).toHaveBeenCalledWith(
-        expect.stringContaining("No router found in Express app")
-      );
+      expect(console.warn).toHaveBeenCalledWith(expect.stringContaining("No router found in Express app"));
     });
 
     it("should correctly filter routes by path prefix", () => {
@@ -149,26 +117,18 @@ describe("index", () => {
       const apiRouter = Router();
 
       // Set up API routes
-      apiRouter.get("/users", (req: Request, res: Response) =>
-        res.send("Get users")
-      );
+      apiRouter.get("/users", (req: Request, res: Response) => res.send("Get users"));
       app.use("/api", apiRouter);
 
       // Set up non-API routes
-      app.get("/health", (req: Request, res: Response) =>
-        res.send("Health check")
-      );
-      app.get("/status", (req: Request, res: Response) =>
-        res.send("Status check")
-      );
+      app.get("/health", (req: Request, res: Response) => res.send("Health check"));
+      app.get("/status", (req: Request, res: Response) => res.send("Status check"));
 
       // Only show API routes
       displayRoutes(app, { pathPrefix: "/api" });
 
       // Check output
-      const consoleOutput = (console.log as jest.Mock).mock.calls
-        .map((call) => call[0]?.toString() || "")
-        .join("\n");
+      const consoleOutput = (console.log as jest.Mock).mock.calls.map((call) => call[0]?.toString() || "").join("\n");
 
       // Should contain Users but not health or status endpoints
       expect(consoleOutput).toContain("Users");
@@ -182,18 +142,10 @@ describe("index", () => {
       const apiRouter = Router();
 
       // Set up different HTTP methods
-      apiRouter.get("/items", (req: Request, res: Response) =>
-        res.send("Get items")
-      );
-      apiRouter.post("/items", (req: Request, res: Response) =>
-        res.send("Create item")
-      );
-      apiRouter.put("/items/:id", (req: Request, res: Response) =>
-        res.send("Update item")
-      );
-      apiRouter.delete("/items/:id", (req: Request, res: Response) =>
-        res.send("Delete item")
-      );
+      apiRouter.get("/items", (req: Request, res: Response) => res.send("Get items"));
+      apiRouter.post("/items", (req: Request, res: Response) => res.send("Create item"));
+      apiRouter.put("/items/:id", (req: Request, res: Response) => res.send("Update item"));
+      apiRouter.delete("/items/:id", (req: Request, res: Response) => res.send("Delete item"));
 
       app.use("/api", apiRouter);
 
@@ -203,9 +155,7 @@ describe("index", () => {
       });
 
       // Check output
-      const consoleOutput = (console.log as jest.Mock).mock.calls
-        .map((call) => call[0]?.toString() || "")
-        .join("\n");
+      const consoleOutput = (console.log as jest.Mock).mock.calls.map((call) => call[0]?.toString() || "").join("\n");
 
       // Should contain GET but not POST/PUT/DELETE
       expect(consoleOutput).toContain("GET");

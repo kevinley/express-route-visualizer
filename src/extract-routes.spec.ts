@@ -65,9 +65,7 @@ describe("extractRoutes", () => {
       // Add routes to the posts router
       postsRouter.get("/", (req, res) => res.send("Get all posts"));
       postsRouter.post("/", (req, res) => res.send("Create post"));
-      postsRouter.get("/:id/comments", (req, res) =>
-        res.send("Get post comments")
-      );
+      postsRouter.get("/:id/comments", (req, res) => res.send("Get post comments"));
 
       // Mount the routers
       apiRouter.use("/users", usersRouter);
@@ -123,9 +121,7 @@ describe("extractRoutes", () => {
       const routes = extractRoutes(app);
 
       // Should have issued a warning
-      expect(console.warn).toHaveBeenCalledWith(
-        "No router found in Express app. The app may be empty or not initialized properly."
-      );
+      expect(console.warn).toHaveBeenCalledWith("No router found in Express app. The app may be empty or not initialized properly.");
 
       // Should return empty array
       expect(routes).toEqual([]);
@@ -349,9 +345,7 @@ describe("extractRoutes", () => {
 
       // Create routes
       app.get("/api/users", (req, res) => res.send("Public"));
-      app.get("/api/users/profile", middleware, (req, res) =>
-        res.send("Private")
-      );
+      app.get("/api/users/profile", middleware, (req, res) => res.send("Private"));
 
       const routes = extractRoutes(app, {
         filterDomain: "users",
@@ -403,12 +397,8 @@ describe("extractRoutes", () => {
       }
 
       // Add protected routes
-      router.get("/admin/settings", ensureAuth, (req, res) =>
-        res.send("Admin settings")
-      );
-      router.get("/admin/users", ensureAuth, (req, res) =>
-        res.send("Admin users")
-      );
+      router.get("/admin/settings", ensureAuth, (req, res) => res.send("Admin settings"));
+      router.get("/admin/users", ensureAuth, (req, res) => res.send("Admin users"));
 
       app.use("/api", router);
 
@@ -498,12 +488,8 @@ describe("extractRoutes", () => {
       const routes = extractRoutes(app);
 
       expect(routes).toContainEqual(expect.objectContaining({ path: "/api" }));
-      expect(routes).toContainEqual(
-        expect.objectContaining({ path: "/api/double-slash" })
-      );
-      expect(routes).toContainEqual(
-        expect.objectContaining({ path: "/api/trailing" })
-      );
+      expect(routes).toContainEqual(expect.objectContaining({ path: "/api/double-slash" }));
+      expect(routes).toContainEqual(expect.objectContaining({ path: "/api/trailing" }));
     });
 
     it("should handle edge cases in route patterns", () => {
@@ -512,9 +498,7 @@ describe("extractRoutes", () => {
 
       // Add routes with unusual patterns
       router.get("", (req, res) => res.send("Empty path"));
-      router.get("//multiple//slashes//", (req, res) =>
-        res.send("Multiple slashes")
-      );
+      router.get("//multiple//slashes//", (req, res) => res.send("Multiple slashes"));
       router.get("/:param?", (req, res) => res.send("Optional param")); // Optional parameter
 
       app.use("/api/", router);
@@ -523,12 +507,8 @@ describe("extractRoutes", () => {
 
       // Routes should be normalized
       expect(routes).toContainEqual(expect.objectContaining({ path: "/api" })); // Empty path becomes just the prefix
-      expect(routes).toContainEqual(
-        expect.objectContaining({ path: "/api/multiple/slashes" })
-      ); // Normalized
-      expect(routes).toContainEqual(
-        expect.objectContaining({ path: "/api/:param?" })
-      ); // Optional param preserved with the ? marker
+      expect(routes).toContainEqual(expect.objectContaining({ path: "/api/multiple/slashes" })); // Normalized
+      expect(routes).toContainEqual(expect.objectContaining({ path: "/api/:param?" })); // Optional param preserved with the ? marker
     });
 
     it("should handle advanced regex patterns in route paths", () => {
@@ -538,13 +518,9 @@ describe("extractRoutes", () => {
       const router = Router();
 
       // Add routes with complex regex patterns
-      router.get("/path/:param(d+)-:name([a-z]+)", (req, res) =>
-        res.send("Complex param pattern")
-      );
+      router.get("/path/:param(d+)-:name([a-z]+)", (req, res) => res.send("Complex param pattern"));
 
-      router.get("/optional/:param?/:required", (req, res) =>
-        res.send("Optional and required params")
-      );
+      router.get("/optional/:param?/:required", (req, res) => res.send("Optional and required params"));
 
       app.use("/api", router);
 
@@ -562,14 +538,10 @@ describe("extractRoutes", () => {
       const router = Router();
 
       // Route with unusual characters
-      router.get("/special~chars/:weird.param", (req, res) =>
-        res.send("Special chars")
-      );
+      router.get("/special~chars/:weird.param", (req, res) => res.send("Special chars"));
 
       // Route with regex chars in path
-      router.get("/with-[brackets]", (req, res) =>
-        res.send("Path with regex chars")
-      );
+      router.get("/with-[brackets]", (req, res) => res.send("Path with regex chars"));
 
       app.use("/", router);
 
@@ -691,9 +663,7 @@ describe("extractRoutes", () => {
             route: {
               path: "/mock-route",
               methods: { get: true },
-              stack: [
-                { handle: (req: any, res: any) => res.send("Mock response") },
-              ],
+              stack: [{ handle: (req: any, res: any) => res.send("Mock response") }],
             },
             regexp: new RegExp("^\\/?(?=\\/|$)"), // Common root path regex in Express
           },
@@ -789,9 +759,7 @@ describe("extractRoutes", () => {
               route: {
                 path: "/test",
                 methods: { get: true },
-                stack: [
-                  { handle: (req: any, res: any) => res.send("Test route") },
-                ],
+                stack: [{ handle: (req: any, res: any) => res.send("Test route") }],
               },
             },
           ],
@@ -832,9 +800,7 @@ describe("extractRoutes", () => {
               route: {
                 path: "/special",
                 methods: { get: true },
-                stack: [
-                  { handle: (req: any, res: any) => res.send("Special route") },
-                ],
+                stack: [{ handle: (req: any, res: any) => res.send("Special route") }],
               },
             },
           ],
@@ -916,9 +882,7 @@ describe("extractRoutes", () => {
       const router = Router();
 
       // Create routes with problematic paths
-      router.get("//multiple///slashes", (req, res) =>
-        res.send("Multiple slashes")
-      );
+      router.get("//multiple///slashes", (req, res) => res.send("Multiple slashes"));
 
       app.use("//api/", router);
 
@@ -938,12 +902,8 @@ describe("extractRoutes", () => {
       const routes = extractRoutes(app);
 
       // Both should be normalized to not have trailing slashes (except root path)
-      expect(routes.find((r) => r.path.includes("with-slash"))?.path).toBe(
-        "/with-slash"
-      );
-      expect(routes.find((r) => r.path.includes("without-slash"))?.path).toBe(
-        "/without-slash"
-      );
+      expect(routes.find((r) => r.path.includes("with-slash"))?.path).toBe("/with-slash");
+      expect(routes.find((r) => r.path.includes("without-slash"))?.path).toBe("/without-slash");
     });
   });
 
@@ -966,12 +926,8 @@ describe("extractRoutes", () => {
         next();
       }
 
-      usersRouter.get("/", ensureAuthenticated, (req, res) =>
-        res.send("List users")
-      );
-      usersRouter.get("/:id", ensureAuthenticated, (req, res) =>
-        res.send("Get user")
-      );
+      usersRouter.get("/", ensureAuthenticated, (req, res) => res.send("List users"));
+      usersRouter.get("/:id", ensureAuthenticated, (req, res) => res.send("Get user"));
 
       postsRouter.get("/", (req, res) => res.send("List posts"));
       postsRouter.get("/:id", (req, res) => res.send("Get post"));
@@ -1009,9 +965,7 @@ describe("extractRoutes", () => {
         showUnprotectedOnly: true,
         protectionMiddlewareName: "ensureAuthenticated",
       });
-      expect(unprotectedRoutes.some((r) => r.path.includes("/users"))).toBe(
-        false
-      );
+      expect(unprotectedRoutes.some((r) => r.path.includes("/users"))).toBe(false);
 
       // Test combined filters
       const v2PublicRoutes = extractRoutes(app, {

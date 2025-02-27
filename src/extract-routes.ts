@@ -36,19 +36,12 @@ export function extractRoutes(
 
   // If no router is found, app may not be initialized
   if (!router) {
-    console.warn(
-      "No router found in Express app. The app may be empty or not initialized properly."
-    );
+    console.warn("No router found in Express app. The app may be empty or not initialized properly.");
     return [];
   }
 
   // Extract all routes from the Express app
-  const extractedRoutes = extractRoutesFromRouter(
-    router,
-    "/",
-    isProtectedFn,
-    protectionMiddlewareName
-  );
+  const extractedRoutes = extractRoutesFromRouter(router, "/", isProtectedFn, protectionMiddlewareName);
 
   // Apply filters to the extracted routes
   return filterRoutes(extractedRoutes, {
@@ -76,28 +69,13 @@ function extractRoutesFromRouter(
   return stack.flatMap((layer: any) => {
     if (isRouteLayer(layer)) {
       // This is a route definition (like router.get('/users', ...))
-      return extractRoutesFromRouteLayer(
-        layer,
-        baseRoute,
-        isProtectedFn,
-        protectionMiddlewareName
-      );
+      return extractRoutesFromRouteLayer(layer, baseRoute, isProtectedFn, protectionMiddlewareName);
     } else if (isNestedRouter(layer)) {
       // Handle nested router (router inside router)
-      return extractRoutesFromNestedRouter(
-        layer,
-        baseRoute,
-        isProtectedFn,
-        protectionMiddlewareName
-      );
+      return extractRoutesFromNestedRouter(layer, baseRoute, isProtectedFn, protectionMiddlewareName);
     } else if (isSpecialMiddleware(layer)) {
       // Handle special middleware that might contain routes
-      return extractRoutesFromSpecialMiddleware(
-        layer,
-        baseRoute,
-        isProtectedFn,
-        protectionMiddlewareName
-      );
+      return extractRoutesFromSpecialMiddleware(layer, baseRoute, isProtectedFn, protectionMiddlewareName);
     }
     // Other middleware types are ignored
     return [];
@@ -117,13 +95,7 @@ function filterRoutes(
     excludeFilter?: (route: RouteInfo) => boolean;
   }
 ): RouteInfo[] {
-  const {
-    filterDomain,
-    pathPrefix,
-    showUnprotectedOnly,
-    includeFilter,
-    excludeFilter,
-  } = filters;
+  const { filterDomain, pathPrefix, showUnprotectedOnly, includeFilter, excludeFilter } = filters;
 
   let filteredRoutes = [...routes];
 
@@ -134,9 +106,7 @@ function filterRoutes(
 
   // Filter by path prefix
   if (pathPrefix) {
-    filteredRoutes = filteredRoutes.filter((route) =>
-      route.path.startsWith(pathPrefix)
-    );
+    filteredRoutes = filteredRoutes.filter((route) => route.path.startsWith(pathPrefix));
   }
 
   // Apply protected routes filter
@@ -160,10 +130,7 @@ function filterRoutes(
 /**
  * Applies domain filtering to routes
  */
-function applyDomainFilter(
-  routes: RouteInfo[],
-  filterDomain: string | string[]
-): RouteInfo[] {
+function applyDomainFilter(routes: RouteInfo[], filterDomain: string | string[]): RouteInfo[] {
   const domains = Array.isArray(filterDomain) ? filterDomain : [filterDomain];
 
   return routes.filter((route) => {
@@ -171,9 +138,7 @@ function applyDomainFilter(
       // Normalize domain for comparison
       const domainString = domain.toString().toLowerCase();
       // Remove leading slash if present
-      const normalizedDomain = domainString.startsWith("/")
-        ? domainString.substring(1)
-        : domainString;
+      const normalizedDomain = domainString.startsWith("/") ? domainString.substring(1) : domainString;
 
       // Get route path segments
       const pathSegments = route.path.toLowerCase().split("/").filter(Boolean);
@@ -201,12 +166,7 @@ function extractRoutesFromNestedRouter(
   // Combine the base path with the sub-router path
   const combinedPath = combinePaths(baseRoute, subRoutePath);
 
-  return extractRoutesFromRouter(
-    layer.handle,
-    combinedPath,
-    isProtectedFn,
-    protectionMiddlewareName
-  );
+  return extractRoutesFromRouter(layer.handle, combinedPath, isProtectedFn, protectionMiddlewareName);
 }
 
 /**
@@ -222,12 +182,7 @@ function extractRoutesFromSpecialMiddleware(
 
   // Check if this is a nested middleware with router-like structure
   if (layer.handle.stack) {
-    return extractRoutesFromRouter(
-      layer.handle,
-      combinePaths(baseRoute, subRoutePath),
-      isProtectedFn,
-      protectionMiddlewareName
-    );
+    return extractRoutesFromRouter(layer.handle, combinePaths(baseRoute, subRoutePath), isProtectedFn, protectionMiddlewareName);
   }
 
   return [];
@@ -250,9 +205,7 @@ function extractRoutesFromRouteLayer(
   const fullPath = combinePaths(basePath, routePath);
 
   // Get all HTTP methods defined for this route
-  const methods = Object.keys(route.methods).filter(
-    (method) => route.methods[method]
-  );
+  const methods = Object.keys(route.methods).filter((method) => route.methods[method]);
 
   // Extract middleware information
   const middlewares = extractMiddlewares(route);
@@ -260,13 +213,7 @@ function extractRoutesFromRouteLayer(
   // Process each HTTP method for this route
   return methods.map((method) => {
     // Determine if the route is protected
-    const isProtected = determineRouteProtection(
-      fullPath,
-      method,
-      middlewares,
-      isProtectedFn,
-      protectionMiddlewareName
-    );
+    const isProtected = determineRouteProtection(fullPath, method, middlewares, isProtectedFn, protectionMiddlewareName);
 
     // Create route info object
     return {

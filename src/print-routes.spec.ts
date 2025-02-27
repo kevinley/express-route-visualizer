@@ -16,9 +16,7 @@ describe("printRoutes", () => {
     it("should display a message when no routes are found", () => {
       printRoutes([]);
 
-      expect(console.log).toHaveBeenCalledWith(
-        expect.stringContaining("No routes found matching your criteria")
-      );
+      expect(console.log).toHaveBeenCalledWith(expect.stringContaining("No routes found matching your criteria"));
     });
 
     it("should display formatted routes with proper headers", () => {
@@ -34,16 +32,10 @@ describe("printRoutes", () => {
       printRoutes(routes);
 
       // Check header was printed
-      expect(console.log).toHaveBeenCalledWith(
-        expect.stringContaining("DOMAIN")
-      );
-      expect(console.log).toHaveBeenCalledWith(
-        expect.stringContaining("METHOD")
-      );
+      expect(console.log).toHaveBeenCalledWith(expect.stringContaining("DOMAIN"));
+      expect(console.log).toHaveBeenCalledWith(expect.stringContaining("METHOD"));
       expect(console.log).toHaveBeenCalledWith(expect.stringContaining("PATH"));
-      expect(console.log).toHaveBeenCalledWith(
-        expect.stringContaining("PROTECTION")
-      );
+      expect(console.log).toHaveBeenCalledWith(expect.stringContaining("PROTECTION"));
     });
 
     it("should display routes grouped by domain", () => {
@@ -65,9 +57,7 @@ describe("printRoutes", () => {
       printRoutes(routes);
 
       // Check both Users and Products domains are displayed
-      const consoleOutput = (console.log as jest.Mock).mock.calls
-        .map((call) => call[0]?.toString() || "")
-        .join("\n");
+      const consoleOutput = (console.log as jest.Mock).mock.calls.map((call) => call[0]?.toString() || "").join("\n");
 
       expect(consoleOutput).toContain("Users");
       expect(consoleOutput).toContain("Products");
@@ -91,9 +81,7 @@ describe("printRoutes", () => {
 
       printRoutes(routes);
 
-      const consoleOutput = (console.log as jest.Mock).mock.calls
-        .map((call) => call[0]?.toString() || "")
-        .join("\n");
+      const consoleOutput = (console.log as jest.Mock).mock.calls.map((call) => call[0]?.toString() || "").join("\n");
 
       expect(consoleOutput).toContain("🌍"); // Public icon
       expect(consoleOutput).toContain("🔒"); // Lock icon
@@ -114,9 +102,7 @@ describe("printRoutes", () => {
 
       printRoutes(routes);
 
-      const consoleOutput = (console.log as jest.Mock).mock.calls
-        .map((call) => call[0]?.toString() || "")
-        .join("\n");
+      const consoleOutput = (console.log as jest.Mock).mock.calls.map((call) => call[0]?.toString() || "").join("\n");
 
       expect(consoleOutput).toContain("Users"); // Domain is capitalized
     });
@@ -133,9 +119,7 @@ describe("printRoutes", () => {
 
       printRoutes(routes);
 
-      const consoleOutput = (console.log as jest.Mock).mock.calls
-        .map((call) => call[0]?.toString() || "")
-        .join("\n");
+      const consoleOutput = (console.log as jest.Mock).mock.calls.map((call) => call[0]?.toString() || "").join("\n");
 
       expect(consoleOutput).toContain("Root");
     });
@@ -176,12 +160,8 @@ describe("printRoutes", () => {
       const calls = (console.log as jest.Mock).mock.calls;
 
       // Get the indices of relevant method displays (after header)
-      const productsCalls = calls.findIndex(
-        (call) => call[0] && call[0].toString().includes("Products")
-      );
-      const usersCalls = calls.findIndex(
-        (call) => call[0] && call[0].toString().includes("Users")
-      );
+      const productsCalls = calls.findIndex((call) => call[0] && call[0].toString().includes("Products"));
+      const usersCalls = calls.findIndex((call) => call[0] && call[0].toString().includes("Users"));
 
       // Use these indices to verify sorting - Products should come before Users alphabetically
       expect(productsCalls).toBeLessThan(usersCalls);
@@ -207,10 +187,8 @@ describe("printRoutes", () => {
         };
 
         // Use safer access with explicit default values
-        const aPriority =
-          a.method in methodPriority ? methodPriority[a.method] : 99;
-        const bPriority =
-          b.method in methodPriority ? methodPriority[b.method] : 99;
+        const aPriority = a.method in methodPriority ? methodPriority[a.method] : 99;
+        const bPriority = b.method in methodPriority ? methodPriority[b.method] : 99;
 
         return aPriority - bPriority;
       });

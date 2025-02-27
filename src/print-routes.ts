@@ -51,10 +51,8 @@ export function printRoutes(routes: RouteInfo[]): void {
     };
 
     // Use safer access with explicit default values
-    const aPriority =
-      a.method in methodPriority ? methodPriority[a.method] : 99;
-    const bPriority =
-      b.method in methodPriority ? methodPriority[b.method] : 99;
+    const aPriority = a.method in methodPriority ? methodPriority[a.method] : 99;
+    const bPriority = b.method in methodPriority ? methodPriority[b.method] : 99;
 
     return aPriority - bPriority;
   });
@@ -91,9 +89,7 @@ export function printRoutes(routes: RouteInfo[]): void {
   // Use bold then white instead of chaining if possible
   console.log(chalk.bold.white(headerText));
 
-  console.log(
-    chalk.dim("─".repeat(groupNameWidth + methodWidth + pathWidth + 20))
-  );
+  console.log(chalk.dim("─".repeat(groupNameWidth + methodWidth + pathWidth + 20)));
 
   // Print all routes with group names in the first column
   let isFirstInGroup = true;

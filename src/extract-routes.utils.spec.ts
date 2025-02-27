@@ -127,33 +127,13 @@ describe("Middleware Extraction Functions", () => {
     });
 
     it("should check for specific middleware name when provided", () => {
-      const middlewares = [
-        { name: "logger" },
-        { name: "requireAuth" },
-        { name: "validator" },
-      ];
+      const middlewares = [{ name: "logger" }, { name: "requireAuth" }, { name: "validator" }];
 
       // Should return true when middleware with name exists
-      expect(
-        determineRouteProtection(
-          "/api/users",
-          "get",
-          middlewares,
-          undefined,
-          "requireAuth"
-        )
-      ).toBe(true);
+      expect(determineRouteProtection("/api/users", "get", middlewares, undefined, "requireAuth")).toBe(true);
 
       // Should return false when middleware with name doesn't exist
-      expect(
-        determineRouteProtection(
-          "/api/users",
-          "get",
-          middlewares,
-          undefined,
-          "notFound"
-        )
-      ).toBe(false);
+      expect(determineRouteProtection("/api/users", "get", middlewares, undefined, "notFound")).toBe(false);
     });
 
     it("should consider routes unprotected by default", () => {
@@ -164,9 +144,7 @@ describe("Middleware Extraction Functions", () => {
       ];
 
       // Without explicit configuration, routes are unprotected
-      expect(determineRouteProtection("/api/users", "get", middlewares)).toBe(
-        false
-      );
+      expect(determineRouteProtection("/api/users", "get", middlewares)).toBe(false);
     });
   });
 });

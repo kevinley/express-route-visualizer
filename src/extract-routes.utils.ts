@@ -9,21 +9,14 @@ export function isRouteLayer(layer: any): boolean {
  * Checks if a layer is a nested router
  */
 export function isNestedRouter(layer: any): boolean {
-  return layer && layer.name === "router" && layer.handle && layer.handle.stack
-    ? true
-    : false;
+  return layer && layer.name === "router" && layer.handle && layer.handle.stack ? true : false;
 }
 
 /**
  * Checks if a layer is a special middleware that might contain routes
  */
 export function isSpecialMiddleware(layer: any): boolean {
-  return layer &&
-    layer.handle &&
-    typeof layer.handle === "function" &&
-    layer.regexp
-    ? true
-    : false;
+  return layer && layer.handle && typeof layer.handle === "function" && layer.regexp ? true : false;
 }
 
 /**
@@ -54,9 +47,7 @@ export function determineRouteProtection(
 
   // If protectionMiddlewareName is provided, check for it directly
   if (protectionMiddlewareName) {
-    return middlewares.some(
-      (middleware) => middleware?.name === protectionMiddlewareName
-    );
+    return middlewares.some((middleware) => middleware?.name === protectionMiddlewareName);
   }
 
   // By default, consider routes as unprotected
@@ -72,11 +63,7 @@ export function extractBaseRoute(regexp: RegExp | null | undefined): string {
   const regexString = regexp.toString();
 
   // Try different strategies to extract the path
-  return (
-    extractFastPathRoute(regexString) ||
-    extractStandardRoute(regexString) ||
-    extractFallbackRoute(regexString)
-  );
+  return extractFastPathRoute(regexString) || extractStandardRoute(regexString) || extractFallbackRoute(regexString);
 }
 
 /**
@@ -150,14 +137,10 @@ export function combinePaths(basePath: string, routePath: any): string {
   const normalizedRoutePath = normalizeRoutePath(routePath);
 
   // Ensure base path ends with slash if it's not just "/"
-  const base =
-    basePath === "/" ? "" : basePath.endsWith("/") ? basePath : basePath + "/";
+  const base = basePath === "/" ? "" : basePath.endsWith("/") ? basePath : basePath + "/";
 
   // Remove leading slash from route path if base is not empty
-  const route =
-    base && normalizedRoutePath.startsWith("/")
-      ? normalizedRoutePath.substring(1)
-      : normalizedRoutePath;
+  const route = base && normalizedRoutePath.startsWith("/") ? normalizedRoutePath.substring(1) : normalizedRoutePath;
 
   // Combine and normalize path
   let combined = (base + route).replace(/\/+/g, "/");
