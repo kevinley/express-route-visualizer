@@ -4,11 +4,7 @@ import { displayRoutes } from "../src";
 const app = express();
 
 // Middleware to simulate authentication
-const authenticate = (
-  req: express.Request,
-  res: express.Response,
-  next: express.NextFunction
-) => {
+const authenticate = (req: express.Request, res: express.Response, next: express.NextFunction) => {
   next();
 };
 
@@ -49,10 +45,6 @@ displayRoutes(app);
 // Display only unprotected routes
 console.log("\nUnprotected Routes:");
 displayRoutes(app, { showUnprotectedOnly: true });
-
-// Display only routes in the 'users' domain
-console.log("\nUsers Domain Routes:");
-displayRoutes(app, { filterDomain: "users" });
 
 // Start server if this file is executed directly
 if (require.main === module) {

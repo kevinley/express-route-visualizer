@@ -26,6 +26,8 @@ npm install express-route-visualizer
 
 ### Basic Usage
 
+![Express Route Visualizer Output](examples/basic-usage.png)
+
 ```javascript
 const express = require("express");
 const { displayRoutes } = require("express-route-visualizer");
