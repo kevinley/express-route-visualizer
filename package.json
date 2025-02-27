@@ -1,6 +1,6 @@
 {
   "name": "express-route-visualizer",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Visualize Express.js routes in a beautiful, organized format",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
