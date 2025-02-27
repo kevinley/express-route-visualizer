@@ -71,7 +71,6 @@ You can customize the route display with the following options:
 | -------------------------- | ------------------------------- | ----------- | --------------------------------------------------------------------- |
 | `domainFilter`             | `string \| string[]`            | `undefined` | Filter routes by domain (e.g., "users" will match "/api/users/\*")    |
 | `showUnprotectedOnly`      | `boolean`                       | `false`     | Only show routes that don't require authentication                    |
-| `pathPrefix`               | `string`                        | `undefined` | Only show routes that start with this path prefix                     |
 | `isProtected`              | `(route: RouteInfo) => boolean` | `undefined` | Custom function to determine if a route is protected                  |
 | `includeFilter`            | `(route: RouteInfo) => boolean` | `undefined` | Custom function to include only routes that match criteria            |
 | `excludeFilter`            | `(route: RouteInfo) => boolean` | `undefined` | Custom function to exclude routes that match criteria                 |
