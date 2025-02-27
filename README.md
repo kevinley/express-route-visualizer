@@ -1,6 +1,12 @@
 # Express Route Visualizer
 
-A lightweight utility to extract and display Express.js application routes in a clean, organized format.
+[![npm version](https://img.shields.io/npm/v/express-route-visualizer.svg)](https://www.npmjs.com/package/express-route-visualizer)
+[![Build Status](https://github.com/username/express-route-visualizer/actions/workflows/ci.yml/badge.svg)](https://github.com/username/express-route-visualizer/actions)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![npm downloads](https://img.shields.io/npm/dm/express-route-visualizer.svg)](https://www.npmjs.com/package/express-route-visualizer)
+[![TypeScript](https://img.shields.io/badge/TypeScript-4.9+-blue.svg)](https://www.typescriptlang.org/)
+
+A lightweight utility to extract and display Express.js application routes in clean format.
 
 ## Features
 
@@ -140,40 +146,20 @@ displayRoutes(app, {
 });
 ```
 
-## Troubleshooting
-
-### Type Issues with Express
-
-If you encounter TypeScript errors related to Express types, you can use a more generic approach:
-
-```typescript
-import express from "express";
-import displayRoutes from "express-route-visualizer";
-
-const app = express();
-// ... define your routes
-
-// Use the default export which accepts any Express app
-displayRoutes(app);
-```
-
 ## Development
-
-### Running Tests
-
-```bash
-# Run tests
-npm test
-
-# Run tests with coverage
-npm test
-```
 
 ### Linting
 
 ```bash
 # Run linting
 npm run lint
+```
+
+### Running Tests
+
+```bash
+# Run tests
+npm test
 ```
 
 ### CI/CD
@@ -183,7 +169,7 @@ This project uses GitHub Actions for continuous integration. The following check
 - Linting (ESLint)
 - Type checking (TypeScript)
 - Building the project
-- Running tests with coverage reporting
+- Running tests
 
 You can see the status of these checks in the GitHub repository under the "Actions" tab.
 
